@@ -24,7 +24,7 @@ def hello_world():
     clean()
     user1 = User(name='Eliot', email='bouteteliot@gmail.com')
     user2 = User(name='Gaby', email='test1234@gmail.com')
-    user3 = User(name='Maxime', email='test5678@gmail.com')
+    user3 = User(name='Maxime oui', email='test5678@gmail.com')
     user4 = User(name='Louis', email='test2938@gmail.com')
     user5 = User(name='Robin', email='test2288@gmail.com')
     user6 = User(name='Baptiste', email='test0999@gmail.com')
