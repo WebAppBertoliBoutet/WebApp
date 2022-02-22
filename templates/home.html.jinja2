@@ -25,15 +25,15 @@
                         </svg>
                     </button>
                 </div>
-                <div id="chats-log" class="border max-h-80 overflow-y-scroll">
-                    {% for item in [1,2,3,4,5,6,7,8,9] %}
-                        <div class="pl-4 hover:bg-slate-50 flex">
+                <div id="chats-log" class="max-h-80 overflow-y-scroll divide-y divide-stale-200">
+                    {% for conv in conversations %}
+                        <div class="pl-4 hover:bg-slate-50 flex cursor-pointer">
                             <div class="mt-6 w-10 h-10 flex justify-center items-center rounded-full bg-slate-200 text-xl text-white uppercase">
                                 PH
                             </div>
                             <div class="flex flex-col p-4">
-                                <span class="font-semibold text-slate-600">Name</span>
-                                <span class="text-slate-400">Text</span>
+                                <span class="font-semibold text-slate-600">{{ conv.name }}</span>
+                                <span class="text-slate-400">{{ conv.messages[-1].content | truncate(25) }}</span>
                             </div>
                         </div>
                     {% endfor %}
@@ -73,21 +73,21 @@
                 class="px-4 py-2 mt-6 h-40 flex items-center text-base text-slate-600 placeholder-gray-300 rounded-lg bg-white">
                 <input id="message_send" class="basis-11/12 focus:outline-none" type="text" placeholder="Type a message..."/>
 
-                <button class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:text-emerald-500 hover:bg-emerald-100">
+                <button class="inline-flex items-center justify-center w-10 h-10 text-gray-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:text-emerald-500 hover:bg-emerald-100">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor">
                         <path stroke-linecap="round" strogke-linejoin="round" stroke-width="2"
                               d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </button>
-                <button class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:text-emerald-500 hover:bg-emerald-100">
+                <button class="inline-flex items-center justify-center w-10 h-10 text-gray-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:text-emerald-500 hover:bg-emerald-100">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                     </svg>
                 </button>
-                <button id="send_button" class="inline-flex items-center justify-center w-10 h-10 mr-2 text-emerald-800 bg-emerald-400 transition-colors duration-150 rounded-full focus:shadow-outline hover:text-emerald-600 hover:bg-emerald-300"
+                <button id="send_button" class="inline-flex items-center justify-center w-10 h-10 text-emerald-800 bg-emerald-400 transition-colors duration-150 rounded-full focus:shadow-outline hover:text-emerald-600 hover:bg-emerald-300"
                 onclick="sendMessage()">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
