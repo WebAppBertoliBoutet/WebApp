@@ -126,5 +126,6 @@ def send_message(id):
     db.session.commit()
     return message.as_dict()
 
+
 if __name__ == '__main__':
     app.run()
