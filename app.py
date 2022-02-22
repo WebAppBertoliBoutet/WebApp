@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, redirect
 
 from database.database import init_database
 from database.models import *
@@ -95,6 +95,20 @@ def conversation(id):
     conv = Conversation.query.get(id)
     return flask.render_template("conversation.html.jinja2", conversation=conv)
 
+
+@app.route('/login')
+def login():
+    return flask.render_template('login.html.jinja2')
+
+@app.route('/register')
+def register():
+    return flask.render_template('register.html.jinja2')
+
+@app.route("/logout")
+def logout():
+    # Forget any user_id
+    # session.clear()
+    return redirect("/login")
 
 @app.route('/seed')
 def seed():
