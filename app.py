@@ -91,13 +91,22 @@ def hello_world():
 
 @app.route('/conversation/<id>')
 def conversation(id):
-    print(id)
-    return flask.render_template("conversation.html.jinja2", id=id)
+    conv = Conversation.query.get(id)
+    return flask.render_template("conversation.html.jinja2", conversation=conv)
 
 
 @app.route('/seed')
 def seed():
     return 'well seeded'
+
+
+@app.route('/conversation/<id>/message', methods=["POST"])
+def send_message(conversationId):
+    conversation = Conversation.query.get(id)
+    first_user = conversation.users[1]
+    message = Message(content='Ceci est un message de test', user=first_user)
+    db.session.add(message)
+    db.session.commit()
 
 
 if __name__ == '__main__':

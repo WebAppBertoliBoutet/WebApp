@@ -1,4 +1,5 @@
 from database.database import db
+from datetime import datetime
 
 
 class User(db.Model):
@@ -12,6 +13,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
 conversations_junction_table = db.Table('user_conversations',
