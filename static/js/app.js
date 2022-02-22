@@ -15,7 +15,7 @@ const sendMessage = () => {
                         <p class="text-xs mr-5 mt-2 self-end">
                             You, ${messageModel.created_at}
                         </p>
-                        <div class="p-4 m-4 rounded-lg text-slate-50 bg-slate-500 shadow-lg max-w-2xl ml-auto w-min">
+                        <div class="p-4 m-4 rounded-lg text-slate-50 bg-slate-500 shadow-lg ml-auto w-min">
                             ${messageModel.content}
                         </div>
                     </>`
