@@ -7,8 +7,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>{{ title }}</title>
 </head>
-<body>
-{% block body %}
-{% endblock %}
+<body class="flex p-10" style="font-family: Helvetica Neue,Helvetica,Arial,sans-serif;">
+
+    <nav class="flex flex-col items-center">
+        {% block main_nav %}
+        {% endblock %}
+    </nav>
+
+    <main class="grow flex items-stretch border rounded-3xl">
+
+        <div class="grow max-w-xs">
+
+        {% block chats_nav %}
+        {% endblock %}
+        </div>
+
+        <div class="grow rounded-3xl m-2 bg-slate-200">
+        {% block current_chat %}
+        {% endblock %}
+        </div>
+
+
+    </main>
+
 </body>
 </html>
