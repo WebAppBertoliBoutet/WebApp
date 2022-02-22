@@ -14,10 +14,12 @@ db.init_app(app)
 with app.test_request_context():
     init_database()
 
+
 def clean():
     db.drop_all()
     db.create_all()
     return "Cleaned!"
+
 
 @app.route('/')
 def hello_world():
@@ -87,9 +89,14 @@ def hello_world():
     return flask.render_template("home.html.jinja2", conversations=conversations)
 
 
+@app.route('/conversation/<id>')
+def conversation(id):
+    print(id)
+    return flask.render_template("conversation.html.jinja2", id=id)
+
+
 @app.route('/seed')
 def seed():
-
     return 'well seeded'
 
 
