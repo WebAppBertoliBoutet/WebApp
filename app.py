@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect
 
 from database.database import init_database
 from database.models import *
@@ -102,6 +102,12 @@ def login():
 @app.route('/register')
 def register():
     return flask.render_template('register.html.jinja2')
+
+@app.route("/logout")
+def logout():
+    # Forget any user_id
+    # session.clear()
+    return redirect("/login")
 
 @app.route('/seed')
 def seed():
