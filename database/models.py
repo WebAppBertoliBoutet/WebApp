@@ -4,8 +4,9 @@ from datetime import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(10))
-    email = db.Column(db.Text)
+    name = db.Column(db.String(24), nullable=False)
+    email = db.Column(db.Text, nullable=False)
+    hash = db.Column(db.Text, nullable=False)
     message = db.relationship("Message", backref='user')
 
 
