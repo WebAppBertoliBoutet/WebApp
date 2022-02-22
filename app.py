@@ -95,6 +95,14 @@ def conversation(id):
     return flask.render_template("conversation.html.jinja2", conversation=conv)
 
 
+@app.route('/login')
+def login():
+    return flask.render_template('login.html.jinja2')
+
+@app.route('/register')
+def register():
+    return flask.render_template('register.html.jinja2')
+
 @app.route('/seed')
 def seed():
     return 'well seeded'
