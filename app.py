@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, jsonify
 
 from database.database import init_database
 from database.models import *
+from flask import request
 import flask
 
 app = Flask(__name__)
@@ -101,13 +102,15 @@ def seed():
 
 
 @app.route('/conversation/<id>/message', methods=["POST"])
-def send_message(conversationId):
+def send_message(id):
+
+    message_content = request.form.get("message")
     conversation = Conversation.query.get(id)
     first_user = conversation.users[1]
-    message = Message(content='Ceci est un message de test', user=first_user)
+    message = Message(content=message_content, user=first_user)
     db.session.add(message)
     db.session.commit()
-
+    return message.as_dict()
 
 if __name__ == '__main__':
     app.run()

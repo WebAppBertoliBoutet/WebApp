@@ -15,6 +15,9 @@ class Message(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 conversations_junction_table = db.Table('user_conversations',
                                         db.Column('conversation_id', db.Integer, db.ForeignKey('conversation.id')),
