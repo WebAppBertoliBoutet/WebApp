@@ -44,10 +44,7 @@ def clean():
     db.create_all()
     return "Cleaned!"
 
-
-@app.route('/', methods=["GET", "POST"])
-@login_required
-def hello_world():
+## INIT TEST DATABASE
     user1 = User(name='Eliot', email='bouteteliot@gmail.com', hash='a123')
     user2 = User(name='Gaby', email='test1234@gmail.com', hash='b456')
     user3 = User(name='Maxime oui', email='test5678@gmail.com', hash='hashsecret')
@@ -108,17 +105,30 @@ def hello_world():
     db.session.add(conversation2)
     db.session.commit()
 
+
+@app.route('/', methods=["GET", "POST"])
+@login_required
+def hello_world():
+
     conversations = Conversation.query.all()
 
-    name = User.query.filter_by(id=session["user_id"]).first().name
+    names = {}
+    for user in User.query.all():
+        names[user.id] = User.query.filter_by(id=user.id).first().name
 
-    return flask.render_template("home.html.jinja2", conversations=conversations, name=name)
+    return flask.render_template("home.html.jinja2", conversations=conversations, names=names)
 
 
 @app.route('/conversation/<id>', methods=["GET", "POST"])
+@login_required
 def conversation(id):
-    conv = Conversation.query.get(id)
-    return flask.render_template("conversation.html.jinja2", conversation=conv)
+    id = 1
+    conv = Conversation.query.filter_by(id=id).first()
+    names = {}
+    for user in User.query.all():
+        names[user.id] = User.query.filter_by(id=user.id).first().name
+
+    return flask.render_template("conversation.html.jinja2", conversation=conversation, names=names)
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -163,7 +173,7 @@ def register():
             # Remember which user has logged in
             session["user_id"] = User.query.filter_by(email=email).first().id
             return redirect("/")
-        # Redirect user to login
+        # Redirect user to home page
     else:
         return flask.render_template("register.html.jinja2")
 
@@ -173,17 +183,16 @@ def logout():
     session.clear()
     return redirect("/login")
 
-
 @app.route('/conversation/<id>/message', methods=["POST"])
 def send_message(id):
 
-    message_content = request.form.get("message")
-    conversation = Conversation.query.get(id)
-    first_user = conversation.users[1]
-    message = Message(content=message_content, user=first_user)
-    db.session.add(message)
-    db.session.commit()
-    return message.as_dict()
+        message_content = request.form.get("message")
+        conversation = Conversation.query.get(id)
+        first_user = conversation.users[1]
+        message = Message(content=message_content, user=first_user)
+        db.session.add(message)
+        db.session.commit()
+        return message.as_dict()
 
 
 if __name__ == '__main__':
