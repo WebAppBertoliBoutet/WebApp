@@ -1,9 +1,10 @@
 const sendMessage = () => {
     const message = $('#message_send').val()
-
+    const href = $(location).attr('href')
+    console.log(href)
     if (message) {
 
-        $.post('/conversation/1/message',
+        $.post(href+'/message',
             {
                 message: message
             },

@@ -170,14 +170,15 @@ def logout():
 
 @app.route('/conversation/<id>/message', methods=["POST"])
 def send_message(id):
-
-        message_content = request.form.get("message")
-        conversation = Conversation.query.get(id)
-        first_user = conversation.users[1]
-        message = Message(content=message_content, user=first_user)
-        db.session.add(message)
-        db.session.commit()
-        return message.as_dict()
+    message_content = request.form.get("message")
+    print(id)
+    conversation = Conversation.query.get(id)
+    user = User.query.filter_by(id=session['user_id']).first()
+    message = Message(content=message_content, user=user)
+    conversation.messages.append(message)
+    db.session.add(message)
+    db.session.commit()
+    return message.as_dict()
 
 
 if __name__ == '__main__':
