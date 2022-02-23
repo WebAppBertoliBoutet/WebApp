@@ -44,15 +44,18 @@ def clean():
     db.create_all()
     return "Cleaned!"
 
-## INIT TEST DATABASE
-    user1 = User(name='Eliot', email='bouteteliot@gmail.com', hash='a123')
-    user2 = User(name='Gaby', email='test1234@gmail.com', hash='b456')
-    user3 = User(name='Maxime oui', email='test5678@gmail.com', hash='hashsecret')
-    user4 = User(name='Louis', email='test2938@gmail.com', hash='tressecret')
-    user5 = User(name='Robin', email='test2288@gmail.com', hash='ahah')
-    user6 = User(name='Baptiste', email='test0999@gmail.com', hash='eheh')
-    user7 = User(name='André', email='test0974@gmail.com', hash='ohoh')
-    user8 = User(name='Mario', email='test3344@gmail.com', hash='uwu')
+
+@app.route('/', methods=["GET", "POST"])
+@login_required
+def hello_world():
+    user1 = User(name='Eliot', email='bouteteliot@gmail.com', hash='hash1')
+    user2 = User(name='Gaby', email='test1234@gmail.com', hash='hash2')
+    user3 = User(name='Maxime oui', email='test5678@gmail.com', hash='hash3')
+    user4 = User(name='Louis', email='test2938@gmail.com', hash='hash4')
+    user5 = User(name='Robin', email='test2288@gmail.com', hash='hash5')
+    user6 = User(name='Baptiste', email='test0999@gmail.com', hash='hash6')
+    user7 = User(name='André', email='test0974@gmail.com', hash='hash7')
+    user8 = User(name='Mario', email='test3344@gmail.com', hash='hash8')
     db.session.add(user1)
     db.session.add(user2)
     db.session.add(user3)
@@ -61,54 +64,36 @@ def clean():
     db.session.add(user6)
     db.session.add(user7)
     db.session.add(user8)
-
     conversation1 = Conversation(isGroup=True, name="DCL")
     db.session.add(conversation1)
-
     conversation1.users.append(user1)
     conversation1.users.append(user2)
     conversation1.users.append(user3)
     conversation1.users.append(user4)
     conversation1.users.append(user5)
-
     db.session.add(conversation1)
-
     conversation2 = Conversation(isGroup=True, name="Yakuzart")
-
     conversation1.users.append(user3)
     conversation1.users.append(user4)
     conversation1.users.append(user5)
-
     db.session.add(conversation2)
-
     message1 = Message(content='Coucou c\'est le premier message', user=user1)
     message2 = Message(content='Coucou c\'est le deuxième message', user=user2)
 
     db.session.add(message1)
     db.session.add(message2)
-
     conversation1.messages.append(message1)
     conversation1.messages.append(message2)
-
     db.session.add(conversation1)
     db.session.commit()
-
     message3 = Message(content='Coucou c\'est le premier message des Yaku', user=user5)
     message4 = Message(content='Coucou c\'est le deuxième message des Yaku', user=user3)
-
     db.session.add(message3)
     db.session.add(message4)
-
     conversation2.messages.append(message3)
     conversation2.messages.append(message4)
-
     db.session.add(conversation2)
     db.session.commit()
-
-
-@app.route('/', methods=["GET", "POST"])
-@login_required
-def hello_world():
 
     conversations = Conversation.query.all()
 
@@ -122,13 +107,13 @@ def hello_world():
 @app.route('/conversation/<id>', methods=["GET", "POST"])
 @login_required
 def conversation(id):
-    id = 1
-    conv = Conversation.query.filter_by(id=id).first()
+    conversations = Conversation.query.all()
+    current_conversation = Conversation.query.filter_by(id=id).first()
     names = {}
     for user in User.query.all():
         names[user.id] = User.query.filter_by(id=user.id).first().name
 
-    return flask.render_template("conversation.html.jinja2", conversation=conversation, names=names)
+    return flask.render_template("conversation.html.jinja2", conversations=conversations, conversation=current_conversation, names=names)
 
 
 @app.route('/login', methods=["GET", "POST"])
