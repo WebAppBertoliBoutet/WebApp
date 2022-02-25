@@ -24,6 +24,7 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
@@ -113,12 +114,12 @@ def conversation(id):
     for user in User.query.all():
         names[user.id] = User.query.filter_by(id=user.id).first().name
 
-    return flask.render_template("conversation.html.jinja2", conversations=conversations, conversation=current_conversation, names=names)
+    return flask.render_template("conversation.html.jinja2", conversations=conversations,
+                                 conversation=current_conversation, names=names)
 
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-
     # Forget any user_id
     session.clear()
 
@@ -127,11 +128,13 @@ def login():
         # Ensure email exists and password is correct
         email = request.form.get("email")
         password = request.form.get("password")
-        if User.query.filter_by(email=email).first() == None:
+
+        maybe_user = User.query.filter_by(email=email).first()
+        if maybe_user is None:
             return redirect("/login")
         if check_password_hash(User.query.filter_by(email=email).first().hash, password):
             # Remember which user has logged in and redirects to home page
-            session["user_id"] = User.query.filter_by(email=email).first().id
+            session["user_id"] = maybe_user.id
             return redirect("/")
         # Redirect user to login
         return redirect("/login")
@@ -140,27 +143,31 @@ def login():
     else:
         return flask.render_template("login.html.jinja2")
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-
     if request.method == "POST":
         # Ensure email exists and password is correct
         name = request.form.get("name")
         email = request.form.get("email")
         password = request.form.get("password")
-        if User.query.filter_by(email=email).first() != None:
+
+        maybe_user = User.query.filter_by(email=email).first()
+
+        if maybe_user is not None:
             return redirect("/register")
         else:
-            hash = generate_password_hash(password)
-            user = User(name=name, email=email, hash=hash)
+            hashed_password = generate_password_hash(password)
+            user = User(name=name, email=email, hash=hashed_password)
             db.session.add(user)
             db.session.commit()
             # Remember which user has logged in
-            session["user_id"] = User.query.filter_by(email=email).first().id
+            session["user_id"] = user.id
             return redirect("/")
         # Redirect user to home page
     else:
         return flask.render_template("register.html.jinja2")
+
 
 @app.route("/logout")
 def logout():
@@ -168,10 +175,10 @@ def logout():
     session.clear()
     return redirect("/login")
 
+
 @app.route('/conversation/<id>/message', methods=["POST"])
 def send_message(id):
     message_content = request.form.get("message")
-    print(id)
     conversation = Conversation.query.get(id)
     user = User.query.filter_by(id=session['user_id']).first()
     message = Message(content=message_content, user=user)
