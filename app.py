@@ -171,7 +171,6 @@ def logout():
 @app.route('/conversation/<id>/message', methods=["POST"])
 def send_message(id):
     message_content = request.form.get("message")
-    print(id)
     conversation = Conversation.query.get(id)
     user = User.query.filter_by(id=session['user_id']).first()
     message = Message(content=message_content, user=user)
