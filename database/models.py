@@ -1,6 +1,6 @@
 from database.database import db
 from datetime import datetime
-
+from dateutil import tz
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +14,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime)
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

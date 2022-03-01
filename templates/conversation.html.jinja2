@@ -6,16 +6,16 @@
         {% for message in conversation.messages %}
             {% if message.user_id == session['user_id'] %}
                 <p class="text-xs mr-5 mt-2 self-end">
-                    You, {{ message.created_at }}
+                    You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
                 </p>
                 <div class="p-4 m-4 rounded-lg text-slate-50 bg-slate-500 shadow-lg shadow-slate-300 max-w-2xl self-end">
                     {{ message.content }}
                 </div>
             {% else %}
-                <p class="text-xs ml-5 mt-2">
-                    {{ names[message.user_id] }}, {{ message.created_at }}
+                <p class="text-xs ml-5 mt-2 self-start">
+                    {{ names[message.user_id] }}, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
                 </p>
-                <div class="p-4 m-4 rounded-lg text-slate-600 bg-white shadow-lg shadow-slate-300">
+                <div class="p-4 m-4 rounded-lg text-slate-600 bg-white shadow-lg shadow-slate-300 self-start">
                     {{ message.content }}
                 </div>
             {% endif %}

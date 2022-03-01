@@ -9,8 +9,31 @@
     <title>Login page</title>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen">
+<header>
+{% with messages = get_flashed_messages(category_filter=["error"]) %}
+    {% if messages %}
+            {% for message in messages %}
+                <div class="bg-red-50 border border-red-600 text-red-700 px-4 py-3 mb-10 rounded flex justify-between" role="alert">
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+    {% endif %}
+{% endwith %}
+{% with messages = get_flashed_messages(category_filter=["validation"]) %}
+    {% if messages %}
+        <header>
+            {% for message in messages %}
+                <div class="bg-teal-50 border border-teal-600 text-teal-700 px-4 py-3 mb-10 rounded flex justify-between" role="alert">
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+        </header>
+    {% endif %}
+{% endwith %}
+</header>
+
 <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 p-20 rounded-2xl shadow-xl shadow-gray-200">
+    <div class="max-w-md w-full space-y-8 p-20 rounded-2xl shadow-xl shadow-gray-200 bg-white">
         <div>
             <!--
             <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
