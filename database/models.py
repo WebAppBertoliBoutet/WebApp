@@ -34,6 +34,6 @@ messages_junction_table = db.Table('message_conversations',
 class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
-    isGroup = db.Column(db.Boolean)
+    isGroup = db.Column(db.Boolean, default=False)
     users = db.relationship('User', backref='conversations', secondary=conversations_junction_table)
     messages = db.relationship('Message', backref='conversations', secondary=messages_junction_table)

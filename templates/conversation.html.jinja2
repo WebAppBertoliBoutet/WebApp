@@ -3,7 +3,6 @@
 
 {% block chat %}
     <section id="messages" class="flex flex-col p-12 overflow-y-scroll grow">
-        <!-- TODO Changer le html en fonction de la conversation cliquée -->
         {% for message in conversation.messages %}
             {% if message.user_id == session['user_id'] %}
                 <p class="text-xs mr-5 mt-2 self-end">
