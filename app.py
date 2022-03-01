@@ -2,6 +2,7 @@ from flask import Flask, redirect, request, session, flash, get_flashed_messages
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
 
 from database.database import init_database
 from database.models import *
@@ -154,7 +155,7 @@ def register():
         maybe_user = User.query.filter_by(email=email).first()
 
         if maybe_user is not None:
-            flash('Please provide a valid name.', 'error')
+            flash('Please provide a valid mail.', 'error')
             return redirect("/register")
         else:
             hashed_password = generate_password_hash(password)
