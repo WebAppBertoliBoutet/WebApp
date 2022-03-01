@@ -3,6 +3,7 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
+from dateutil import tz
 
 from database.database import init_database
 from database.models import *
@@ -79,8 +80,8 @@ def hello_world():
     conversation1.users.append(user4)
     conversation1.users.append(user5)
     db.session.add(conversation2)
-    message1 = Message(content='Coucou c\'est le premier message', user=user1)
-    message2 = Message(content='Coucou c\'est le deuxième message', user=user2)
+    message1 = Message(content='Coucou c\'est le premier message', user=user1, created_at=datetime.now(tz.gettz('Europe/Paris')))
+    message2 = Message(content='Coucou c\'est le deuxième message', user=user2, created_at=datetime.now(tz.gettz('Europe/Paris')))
 
     db.session.add(message1)
     db.session.add(message2)
@@ -88,8 +89,8 @@ def hello_world():
     conversation1.messages.append(message2)
     db.session.add(conversation1)
     db.session.commit()
-    message3 = Message(content='Coucou c\'est le premier message des Yaku', user=user5)
-    message4 = Message(content='Coucou c\'est le deuxième message des Yaku', user=user3)
+    message3 = Message(content='Coucou c\'est le premier message des Yaku', user=user5, created_at=datetime.now(tz.gettz('Europe/Paris')))
+    message4 = Message(content='Coucou c\'est le deuxième message des Yaku', user=user3, created_at=datetime.now(tz.gettz('Europe/Paris')))
     db.session.add(message3)
     db.session.add(message4)
     conversation2.messages.append(message3)
@@ -183,11 +184,14 @@ def send_message(id):
     message_content = request.form.get("message")
     conversation = Conversation.query.get(id)
     user = User.query.filter_by(id=session['user_id']).first()
-    message = Message(content=message_content, user=user)
+    date = datetime.now(tz.gettz('Europe/Paris'))
+    message = Message(content=message_content, user=user, created_at=date)
     conversation.messages.append(message)
     db.session.add(message)
     db.session.commit()
-    return message.as_dict()
+    dict = message.as_dict()
+    dict['created_at'] = date.strftime("%a, %d %B %Y %H:%M:%S")
+    return dict
 
 
 if __name__ == '__main__':
