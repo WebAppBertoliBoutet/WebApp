@@ -1,7 +1,7 @@
 from tempfile import mkdtemp
 
 import flask
-from flask import Flask, redirect, session, Blueprint, url_for
+from flask import Flask, redirect, session, Blueprint, url_for, flash, get_flashed_messages
 from flask import request
 from flask_session import Session
 from flask_restx import Resource, Api
@@ -77,8 +77,6 @@ def conversation(id):
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    # Forget any user_id
-    session.clear()
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
@@ -88,12 +86,14 @@ def login():
 
         maybe_user = User.query.filter_by(email=email).first()
         if maybe_user is None:
+            flash('An error occurred. Please try again', 'error')
             return redirect("/login")
         if check_password_hash(User.query.filter_by(email=email).first().hash, password):
             # Remember which user has logged in and redirects to home page
             session["user_id"] = maybe_user.id
             return redirect("/")
         # Redirect user to login
+        flash('Something wrong happened. Please try again', 'error')
         return redirect("/login")
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -112,6 +112,7 @@ def register():
         maybe_user = User.query.filter_by(email=email).first()
 
         if maybe_user is not None:
+            flash('Please provide a valid email.', 'error')
             return redirect("/register")
         else:
             hashed_password = generate_password_hash(password)
@@ -130,6 +131,7 @@ def register():
 def logout():
     # Forget any user_id
     session.clear()
+    flash('Log out successful', 'validation')
     return redirect("/login")
 
 

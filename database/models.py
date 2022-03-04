@@ -14,7 +14,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    created_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.now().astimezone(tz=tz.gettz('Europe/Paris')))
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
