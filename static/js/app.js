@@ -46,15 +46,15 @@ $(document).on('ready', function() {
 })
 
 function closeModal() {
-    let modal = $('#create_conv_modal')
+    let modal = $('.create_conv_modal')
     modal.hide();
 }
 
 function create_conversation() {
 
 
-    let create_conv_form = `<div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
-                                role="dialog" id="create_conv_modal"
+    let create_conv_form = `<div class="create_conv_modal fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+                                role="dialog"
                                 aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -90,4 +90,56 @@ function create_conversation() {
     </div>`
 
     $('body').append(create_conv_form)
+}
+
+function manage_members() {
+
+
+    let create_conv_form = `<div class="create_conv_modal fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+                                role="dialog"
+                                aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div
+                class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6 ">
+                <button type="button" onclick="closeModal()"
+                            class="rounded-full text-red-400 border border-hidden shadow-sm px-2 py-2 text-base font-medium hover:bg-red-400 hover:text-white  sm:text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                <div>
+                    <div class="mt-3 text-center sm:mt-5 text-slate-600">
+                        <h3 class="text-lg leading-6 font-medium" id="modal-title">Group members</h3>
+                        <div>Placeholder for members list</div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="button"
+                            class="inline-flex justify-center w-full rounded-md border border-slate-600 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-600 hover:border-slate-400 hover:bg-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                        Add a member
+                    </button>
+                </div>
+                <div class="mt-4">
+                    <button type="button"
+                            class="inline-flex justify-center w-full rounded-md border border-red-400 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-400 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
+                        </svg>
+                        Leave the group
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>`
+
+    $('body').append(create_conv_form)
+
+
 }

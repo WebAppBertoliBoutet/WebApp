@@ -2,7 +2,7 @@
 {% set title = "Home Page" %}
 
 {% block children %}
-    <main class="p-4 w-1/4 divide-y flex flex-col max-h-screen overflow-y-hidden">
+    <main class="p-4 w-1/4 flex flex-col max-h-screen overflow-y-hidden">
         <p class="text-xl text-gray-600 p-2">Chats</p>
         <div class="flex flex-col my-2">
             <div id="personal-data" class="flex flex-col items-center">
@@ -48,9 +48,18 @@
     </main>
 
     <main class="p-4 m-2 rounded-3xl w-3/4 max-w-screen divide-y flex flex-col divide-slate-300 bg-slate-200">
-        <section class="text-xl text-slate-600 font-semibold p-2">
+        <section class="text-xl text-slate-600 font-semibold p-2 flex justify-between items-center">
             {% if conversation %}
-                {{ conversation.name }}
+                <span>
+                    {{ conversation.name }}
+                </span>
+                <button id="myBtn" class="inline-flex items-center justify-center w-10 h-10 bg-color-white transition-colors duration-150 rounded-full
+                                focus:shadow-outline hover:text-emerald-500 hover:bg-emerald-100" onclick="manage_members()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                           stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg></button>
             {% endif %}
         </section>
         {% block chat %}
