@@ -118,13 +118,10 @@ function manage_members() {
                     </div>
                 </div>
                 <div class="mt-4">
-                    <button type="button"
-                            class="inline-flex justify-center w-full rounded-md border border-slate-600 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-600 hover:border-slate-400 hover:bg-slate-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
-                        Add a member
-                    </button>
+                        <form class="w-full" action="/add" method="POST">
+                            <input type="email" placeholder="Email to add..." class="rounded mt-4 border border-gray-300 p-3 w-full" name="email"/>
+                            <input type="submit" value="Add a member" class="bg-indigo-500 mt-4 text-sm inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white hover:bg-indigo-700"/>
+                        </form>
                 </div>
                 <div class="mt-4">
                     <button type="button"

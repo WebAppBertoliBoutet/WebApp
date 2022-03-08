@@ -54,7 +54,12 @@ def clean():
 @app.route('/', methods=["GET", "POST"])
 @login_required
 def home():
-    conversations = Conversation.query.all()
+    all_conversations = Conversation.query.all()
+    conversations = []
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    for conversation in all_conversations:
+        if logged_user in conversation.users:
+            conversations += [conversation]
     names = {}
     for user in User.query.all():
         names[user.id] = User.query.filter_by(id=user.id).first().name
@@ -65,14 +70,21 @@ def home():
 @app.route('/conversation/<id>', methods=["GET", "POST"])
 @login_required
 def conversation(id):
-    conversations = Conversation.query.all()
+    all_conversations = Conversation.query.all()
+    conversations = []
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    for conversation in all_conversations:
+        if logged_user in conversation.users:
+            conversations += [conversation]
     current_conversation = Conversation.query.filter_by(id=id).first()
     names = {}
     for user in User.query.all():
         names[user.id] = User.query.filter_by(id=user.id).first().name
-
-    return flask.render_template("conversation.html.jinja2", conversations=conversations,
+    if logged_user in current_conversation.users:
+        return flask.render_template("conversation.html.jinja2", conversations=conversations,
                                  conversation=current_conversation, names=names)
+    else:
+        return redirect("/")
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -157,7 +169,21 @@ def create_conv():
     conv.users.append(user)
     db.session.add(conv)
     db.session.commit()
+    print(user in conv.users)
     return redirect('/conversation/' + str(conv.id))
+
+@app.route('/add', methods=['POST'])
+@login_required
+def add_member():
+    member_email = request.form
+    conversation = Conversation.query.get(id)
+    user_to_add = User.query.filter_by(email=member_email).first()
+    conversation.users.append(user_to_add)
+    db.session.add(conversation)
+    db.session.commit()
+    return redirect('/conversation/' + str(conversation.id))
+
+
 
 
 if __name__ == '__main__':
