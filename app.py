@@ -179,13 +179,27 @@ def add_member(id):
     user_to_add = User.query.filter_by(email=member_email).first()
     if user_to_add is None:
         return jsonify(error="Cet utilisateur n\'existe pas")
-    elif conversation.users.filter(User.email == member_email):
+    elif conversation.users.filter(User.email == member_email).first():
         return jsonify(error="Cet utilisateur est déjà dans la conversation")
     else:
         conversation.users.append(user_to_add)
         db.session.add(conversation)
         db.session.commit()
         return redirect('/conversation/' + str(conversation.id))
+
+
+@app.route('/conversation/<id>/leave', methods=['GET'])
+@login_required
+def leave_conversation(id):
+    conversation = Conversation.query.filter_by(id=id).first()
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    if logged_user is None:
+        return jsonify(error="Cet utilisateur n\'existe pas")
+    else:
+        conversation.users.remove(logged_user)
+        db.session.add(conversation)
+        db.session.commit()
+        return redirect('/')
 
 
 if __name__ == '__main__':

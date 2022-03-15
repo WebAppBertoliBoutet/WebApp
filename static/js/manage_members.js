@@ -28,7 +28,7 @@ const manage_members = (id) => {
                     </form>
                 </div>
                 <div class="mt-4">
-                    <button type="button"
+                    <button type="button" id="leave_button"
                             class="inline-flex justify-center w-full rounded-md border border-red-400 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-400 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
@@ -43,8 +43,8 @@ const manage_members = (id) => {
     $('body').append(manage_members_form)
 
     let alreadySubmitted = false;
-
     const formElem = document.querySelector('#manage_members_form')
+
     formElem.addEventListener('submit', (event) => {
         event.preventDefault()
         const formData = new FormData(formElem);
@@ -80,6 +80,13 @@ const manage_members = (id) => {
                     alreadySubmitted = false;
                 }
             })
+    })
 
+    const leave_button = document.querySelector('#leave_button')
+    leave_button.addEventListener('click', () => {
+        $.get("/conversation/" + id + '/leave')
+            .done((res) => {
+                console.log(res);
+            })
     })
 }
