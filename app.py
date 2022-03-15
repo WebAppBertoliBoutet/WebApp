@@ -183,6 +183,30 @@ def add_member():
     db.session.commit()
     return redirect('/conversation/' + str(conversation.id))
 
+@app.route('/search', methods=['GET','POST'])
+@login_required
+def search():
+    # get string to look for in messages
+    string_to_search = request.form.get("string")
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    # get user conversations and related messages
+    all_conversations = Conversation.query.all()
+    conversations = []
+    messages = []
+    for conversation in all_conversations:
+        if logged_user in conversation.users:
+            conversations += [conversation]
+            messages += conversation.messages
+    # get messages that contain the string
+    searched_messages = []
+    for message in messages:
+        if string_to_search.lower() in message.content.lower():
+            searched_messages += [message]
+    names = {}
+    for user in User.query.all():
+        names[user.id] = User.query.filter_by(id=user.id).first().name
+    return flask.render_template("search.html.jinja2", names=names, conversations=conversations, messages=searched_messages)
+
 
 
 
