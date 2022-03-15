@@ -35,5 +35,5 @@ class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
     isGroup = db.Column(db.Boolean, default=False)
-    users = db.relationship('User', backref='conversations', secondary=conversations_junction_table)
+    users = db.relationship('User', backref='conversations', secondary=conversations_junction_table, lazy="dynamic")
     messages = db.relationship('Message', backref='conversations', secondary=messages_junction_table)

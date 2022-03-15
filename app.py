@@ -2,7 +2,7 @@ from tempfile import mkdtemp
 
 import flask
 from flask import Flask, redirect, session, Blueprint, url_for, flash, get_flashed_messages
-from flask import request
+from flask import request, jsonify
 from flask_session import Session
 from flask_restx import Resource, Api
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -82,14 +82,13 @@ def conversation(id):
         names[user.id] = User.query.filter_by(id=user.id).first().name
     if logged_user in current_conversation.users:
         return flask.render_template("conversation.html.jinja2", conversations=conversations,
-                                 conversation=current_conversation, names=names)
+                                     conversation=current_conversation, names=names)
     else:
         return redirect("/")
 
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Ensure email exists and password is correct
@@ -169,19 +168,8 @@ def create_conv():
     conv.users.append(user)
     db.session.add(conv)
     db.session.commit()
-    print(user in conv.users)
     return redirect('/conversation/' + str(conv.id))
 
-@app.route('/add', methods=['POST'])
-@login_required
-def add_member():
-    member_email = request.form
-    conversation = Conversation.query.get(id)
-    user_to_add = User.query.filter_by(email=member_email).first()
-    conversation.users.append(user_to_add)
-    db.session.add(conversation)
-    db.session.commit()
-    return redirect('/conversation/' + str(conversation.id))
 
 @app.route('/search', methods=['GET','POST'])
 @login_required
@@ -208,6 +196,21 @@ def search():
     return flask.render_template("search.html.jinja2", names=names, conversations=conversations, messages=searched_messages)
 
 
+@app.route('/conversation/<id>/members', methods=['POST'])
+@login_required
+def add_member(id):
+    member_email = request.form.get("email")
+    conversation = Conversation.query.filter_by(id=id).first()
+    user_to_add = User.query.filter_by(email=member_email).first()
+    if user_to_add is None:
+        return jsonify(error="Cet utilisateur n\'existe pas")
+    elif conversation.users.filter(User.email == member_email):
+        return jsonify(error="Cet utilisateur est déjà dans la conversation")
+    else:
+        conversation.users.append(user_to_add)
+        db.session.add(conversation)
+        db.session.commit()
+        return redirect('/conversation/' + str(conversation.id))
 
 
 if __name__ == '__main__':
