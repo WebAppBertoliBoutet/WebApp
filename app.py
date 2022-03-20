@@ -1,7 +1,8 @@
 from tempfile import mkdtemp
 
 import flask
-from flask import Flask, redirect, session, Blueprint, url_for, flash, get_flashed_messages
+import os
+from flask import Flask, redirect, session, Blueprint, url_for, flash, send_from_directory
 from flask import request, jsonify
 from flask_session import Session
 from flask_restx import Resource, Api
@@ -10,6 +11,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from database.database import init_database
 from database.models import *
 from helpers import login_required
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = '/Users/eliot/Desktop/IMT Atlantique/WebApp/WebApp/static/storage'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/api')
@@ -17,8 +22,31 @@ api = Api(blueprint, doc='/doc/')
 app.register_blueprint(blueprint)
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 conv = api.namespace('conversation', description='Conversation operations')
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def get_file_extension(filename):
+    filename, file_extension = os.path.splitext(filename)
+    return file_extension
+
+
+def get_last_message(messages):
+    for message in reversed(messages):
+        if message.content:
+            return message.content
+
+
+app.jinja_env.globals.update(
+    get_last_message=get_last_message,
+    get_file_extension=get_file_extension
+)
 
 
 # Ensure responses aren't cached
@@ -163,13 +191,25 @@ def dashboard():
 @app.route('/conversation/<id>/message', methods=["POST"])
 def send_message(id):
     message_content = request.form.get("message")
+    file = request.files.get('file')
     conversation = Conversation.query.get(id)
     user = User.query.filter_by(id=session['user_id']).first()
-    message = Message(content=message_content, user=user)
-    conversation.messages.append(message)
-    db.session.add(message)
-    db.session.commit()
-    return message.as_dict()
+    if message_content:
+        message = Message(content=message_content, user=user)
+        conversation.messages.append(message)
+        db.session.add(message)
+        db.session.commit()
+        return message.as_dict()
+    elif file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(path)
+        message = Message(filename=filename, user=user)
+        conversation.messages.append(message)
+
+        db.session.add(message)
+        db.session.commit()
+        return path
 
 
 @app.route('/conversation', methods=['POST'])
@@ -207,7 +247,8 @@ def search():
     names = {}
     for user in User.query.all():
         names[user.id] = User.query.filter_by(id=user.id).first().name
-    return flask.render_template("search.html.jinja2", names=names, conversations=conversations, messages=searched_messages)
+    return flask.render_template("search.html.jinja2", names=names, conversations=conversations,
+                                 messages=searched_messages)
 
 
 @app.route('/conversation/<id>/members', methods=['POST'])
@@ -218,7 +259,7 @@ def add_member(id):
     user_to_add = User.query.filter_by(email=member_email).first()
     if user_to_add is None:
         return jsonify(error="Cet utilisateur n\'existe pas")
-    elif conversation.users.filter(User.email == member_email).first():
+    elif conversation.users.filter_by(email=member_email).first():
         return jsonify(error="Cet utilisateur est déjà dans la conversation")
     else:
         conversation.users.append(user_to_add)
@@ -239,6 +280,14 @@ def leave_conversation(id):
         db.session.add(conversation)
         db.session.commit()
         return redirect('/')
+
+
+
+@app.route('/uploads/<name>')
+@login_required
+def download_file(name):
+    print(name)
+    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
 
 if __name__ == '__main__':
