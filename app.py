@@ -245,7 +245,7 @@ def add_member(id):
     user_to_add = User.query.filter_by(email=member_email).first()
     if user_to_add is None:
         return jsonify(error="Cet utilisateur n\'existe pas")
-    elif conversation.users.filter(User.email == member_email).first():
+    elif conversation.users.filter_by(email=member_email).first():
         return jsonify(error="Cet utilisateur est déjà dans la conversation")
     else:
         conversation.users.append(user_to_add)

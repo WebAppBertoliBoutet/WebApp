@@ -27,7 +27,7 @@
                     </p>
                     <a class="m-4 rounded-lg p-2 overflow-hidden text-slate-50 bg-slate-500 shadow-l
                     g shadow-slate-300 max-w-2xl self-end flex items-center space-x-2"
-                          href="{{ url_for('download_file',name=message.filename) }}" target="_blank">
+                       href="{{ url_for('download_file',name=message.filename) }}" target="_blank">
                         <button type="submit">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor" stroke-width="2">
@@ -41,12 +41,41 @@
                     </a>
                 {% endif %}
             {% else %}
-                <p class="text-xs ml-5 mt-2 self-start">
-                    {{ names[message.user_id] }}, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
-                </p>
-                <div class="p-4 m-4 rounded-lg text-slate-600 bg-white shadow-lg shadow-slate-300 self-start">
-                    {{ message.content }}
-                </div>
+                {% if message.content %}
+                    <p class="text-xs ml-5 mt-2 self-start">
+                        {{ names[message.user_id] }}, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                    </p>
+                    <div class="p-4 m-4 rounded-lg text-slate-600 bg-white shadow-lg shadow-slate-300 self-start">
+                        {{ message.content }}
+                    </div>
+                {% elif message.filename and ( get_file_extension(message.filename) == '.jpg' or get_file_extension(message.filename) == '.png') %}
+                    <p class="text-xs mr-5 mt-2 self-start">
+                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                    </p>
+                    <div class="m-4 rounded-lg p-1 overflow-hidden text-slate-600 bg-white shadow-l
+                    g shadow-slate-300 max-w-2xl self-end">
+                        <img src="{{ url_for('static', filename='storage/' + message.filename) }} " alt=""
+                             class="object-cover"/>
+                    </div>
+                {% elif message.filename and get_file_extension(message.filename) == '.pdf' %}
+                    <p class="text-xs mr-5 mt-2 self-start">
+                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                    </p>
+                    <a class="mt-4 rounded-lg p-2 overflow-hidden text-slate-500 bg-white shadow-l
+                    g shadow-slate-300 max-w-2xl self-start flex items-center space-x-2"
+                       href="{{ url_for('download_file',name=message.filename) }}" target="_blank">
+                        <button type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </button>
+                        <p class="text-sm">
+                            {{ message.filename }}
+                        </p>
+                    </a>
+                {% endif %}
             {% endif %}
         {% endfor %}
     </section>

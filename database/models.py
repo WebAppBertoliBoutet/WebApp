@@ -15,10 +15,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-<<<<<<< HEAD
     filename = db.Column(db.String, nullable=True)
-=======
->>>>>>> 2bc5231fd0756243d9f361dcbe570bf11971c8ac
     created_at = db.Column(db.DateTime, default=datetime.now().astimezone(tz=tz.gettz('Europe/Paris')))
 
     def as_dict(self):
