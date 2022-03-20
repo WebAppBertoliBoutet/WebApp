@@ -1,8 +1,9 @@
 from tempfile import mkdtemp
 
 import flask
-from flask import Flask, redirect, session, Blueprint, url_for
-from flask import request
+import os
+from flask import Flask, redirect, session, Blueprint, url_for, flash, send_from_directory
+from flask import request, jsonify
 from flask_session import Session
 from flask_restx import Resource, Api
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -10,6 +11,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from database.database import init_database
 from database.models import *
 from helpers import login_required
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = '/Users/eliot/Desktop/IMT Atlantique/WebApp/WebApp/static/storage'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/api')
@@ -17,8 +22,31 @@ api = Api(blueprint, doc='/doc/')
 app.register_blueprint(blueprint)
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 conv = api.namespace('conversation', description='Conversation operations')
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def get_file_extension(filename):
+    filename, file_extension = os.path.splitext(filename)
+    return file_extension
+
+
+def get_last_message(messages):
+    for message in reversed(messages):
+        if message.content:
+            return message.content
+
+
+app.jinja_env.globals.update(
+    get_last_message=get_last_message,
+    get_file_extension=get_file_extension
+)
 
 
 # Ensure responses aren't cached
@@ -54,7 +82,12 @@ def clean():
 @app.route('/', methods=["GET", "POST"])
 @login_required
 def home():
-    conversations = Conversation.query.all()
+    all_conversations = Conversation.query.all()
+    conversations = []
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    for conversation in all_conversations:
+        if logged_user in conversation.users:
+            conversations += [conversation]
     names = {}
     for user in User.query.all():
         names[user.id] = User.query.filter_by(id=user.id).first().name
@@ -65,21 +98,25 @@ def home():
 @app.route('/conversation/<id>', methods=["GET", "POST"])
 @login_required
 def conversation(id):
-    conversations = Conversation.query.all()
+    all_conversations = Conversation.query.all()
+    conversations = []
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    for conversation in all_conversations:
+        if logged_user in conversation.users:
+            conversations += [conversation]
     current_conversation = Conversation.query.filter_by(id=id).first()
     names = {}
     for user in User.query.all():
         names[user.id] = User.query.filter_by(id=user.id).first().name
-
-    return flask.render_template("conversation.html.jinja2", conversations=conversations,
-                                 conversation=current_conversation, names=names)
+    if logged_user in current_conversation.users:
+        return flask.render_template("conversation.html.jinja2", conversations=conversations,
+                                     conversation=current_conversation, names=names)
+    else:
+        return redirect("/")
 
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    # Forget any user_id
-    session.clear()
-
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Ensure email exists and password is correct
@@ -88,12 +125,14 @@ def login():
 
         maybe_user = User.query.filter_by(email=email).first()
         if maybe_user is None:
+            flash('An error occurred. Please try again', 'error')
             return redirect("/login")
         if check_password_hash(User.query.filter_by(email=email).first().hash, password):
             # Remember which user has logged in and redirects to home page
             session["user_id"] = maybe_user.id
             return redirect("/")
         # Redirect user to login
+        flash('Something wrong happened. Please try again', 'error')
         return redirect("/login")
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -112,6 +151,7 @@ def register():
         maybe_user = User.query.filter_by(email=email).first()
 
         if maybe_user is not None:
+            flash('Please provide a valid email.', 'error')
             return redirect("/register")
         else:
             hashed_password = generate_password_hash(password)
@@ -130,19 +170,32 @@ def register():
 def logout():
     # Forget any user_id
     session.clear()
+    flash('Log out successful', 'validation')
     return redirect("/login")
 
 
 @app.route('/conversation/<id>/message', methods=["POST"])
 def send_message(id):
     message_content = request.form.get("message")
+    file = request.files.get('file')
     conversation = Conversation.query.get(id)
     user = User.query.filter_by(id=session['user_id']).first()
-    message = Message(content=message_content, user=user)
-    conversation.messages.append(message)
-    db.session.add(message)
-    db.session.commit()
-    return message.as_dict()
+    if message_content:
+        message = Message(content=message_content, user=user)
+        conversation.messages.append(message)
+        db.session.add(message)
+        db.session.commit()
+        return message.as_dict()
+    elif file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(path)
+        message = Message(filename=filename, user=user)
+        conversation.messages.append(message)
+
+        db.session.add(message)
+        db.session.commit()
+        return path
 
 
 @app.route('/conversation', methods=['POST'])
@@ -156,6 +209,70 @@ def create_conv():
     db.session.add(conv)
     db.session.commit()
     return redirect('/conversation/' + str(conv.id))
+
+
+@app.route('/search', methods=['GET', 'POST'])
+@login_required
+def search():
+    # get string to look for in messages
+    string_to_search = request.form.get("string")
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    # get user conversations and related messages
+    all_conversations = Conversation.query.all()
+    conversations = []
+    messages = []
+    for conversation in all_conversations:
+        if logged_user in conversation.users:
+            conversations += [conversation]
+            messages += conversation.messages
+    # get messages that contain the string
+    searched_messages = []
+    for message in messages:
+        if string_to_search.lower() in message.content.lower():
+            searched_messages += [message]
+    names = {}
+    for user in User.query.all():
+        names[user.id] = User.query.filter_by(id=user.id).first().name
+    return flask.render_template("search.html.jinja2", names=names, conversations=conversations,
+                                 messages=searched_messages)
+
+
+@app.route('/conversation/<id>/members', methods=['POST'])
+@login_required
+def add_member(id):
+    member_email = request.form.get("email")
+    conversation = Conversation.query.filter_by(id=id).first()
+    user_to_add = User.query.filter_by(email=member_email).first()
+    if user_to_add is None:
+        return jsonify(error="Cet utilisateur n\'existe pas")
+    elif conversation.users.filter(User.email == member_email).first():
+        return jsonify(error="Cet utilisateur est déjà dans la conversation")
+    else:
+        conversation.users.append(user_to_add)
+        db.session.add(conversation)
+        db.session.commit()
+        return redirect('/conversation/' + str(conversation.id))
+
+
+@app.route('/conversation/<id>/leave', methods=['GET'])
+@login_required
+def leave_conversation(id):
+    conversation = Conversation.query.filter_by(id=id).first()
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    if logged_user is None:
+        return jsonify(error="Cet utilisateur n\'existe pas")
+    else:
+        conversation.users.remove(logged_user)
+        db.session.add(conversation)
+        db.session.commit()
+        return redirect('/')
+
+
+@app.route('/uploads/<name>')
+@login_required
+def download_file(name):
+    print(name)
+    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
 
 if __name__ == '__main__':

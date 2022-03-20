@@ -1,14 +1,17 @@
 const sendMessage = () => {
     const message = $('#message_send').val()
+    const files = $('#file')[0].files
     const href = $(location).attr('href')
-    if (message) {
+    let formData = new FormData();
 
-        $.post(href + '/message',
-            {
-                message: message
-            },
-        )
-            .done((messageModel) => {
+    if (message) {
+        formData.append('message', message);
+        console.log(formData)
+        $.ajax({
+            type: "POST",
+            url: href + '/message',
+            data: formData,
+            success: (messageModel) => {
                 $('#message_send').val('')
                 $('#messages').append(
                     `<div class="self-end">
@@ -21,9 +24,23 @@ const sendMessage = () => {
                     </>`
                 )
                 $("#messages").animate({scrollTop: $('#messages').prop("scrollHeight")}, 1000);
-            });
+            },
+            processData: false,
+            contentType: false
+        })
+    } else if (files.length > 0) {
+        formData.set('file', files[0], files[0].filename)
+        $.ajax({
+            type: "POST",
+            url: href + '/message',
+            data: formData,
+            success: (data) => {
+                console.log(data);
+            },
+            processData: false,
+            contentType: false,
+        })
     }
-
 }
 
 $(window).on('load', function () {
@@ -41,20 +58,17 @@ $(document).on('ready', function() {
     form.onsubmit = async (e) => {
         e.preventDefault()
         const form_data = new FormData(form);
-        console.log(form_data)
     }
 })
 
 function closeModal() {
-    let modal = $('#create_conv_modal')
+    let modal = $('.create_conv_modal')
     modal.hide();
 }
 
 function create_conversation() {
-
-
-    let create_conv_form = `<div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
-                                role="dialog" id="create_conv_modal"
+    let create_conv_form = `<div class="create_conv_modal fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+                                role="dialog"
                                 aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>

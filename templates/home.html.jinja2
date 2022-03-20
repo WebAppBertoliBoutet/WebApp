@@ -36,7 +36,7 @@
                                 <span class="flex flex-col p-4 ">
                                     <span class="font-semibold text-slate-600">{{ conv.name }}</span>
                                     {% if conv.messages %}
-                                        <span class="text-slate-400">{{ conv.messages[-1].content | truncate(25) }}</span>
+                                        <span class="text-slate-400">{{ get_last_message(conv.messages) | truncate(25) }}</span>
                                     {% endif %}
                                 </span>
                             </div>
