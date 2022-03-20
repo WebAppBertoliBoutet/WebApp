@@ -211,7 +211,7 @@ def create_conv():
     return redirect('/conversation/' + str(conv.id))
 
 
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search', methods=['GET','POST'])
 @login_required
 def search():
     # get string to look for in messages
@@ -266,6 +266,7 @@ def leave_conversation(id):
         db.session.add(conversation)
         db.session.commit()
         return redirect('/')
+
 
 
 @app.route('/uploads/<name>')
