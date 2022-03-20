@@ -1,0 +1,22 @@
+{% extends 'home.html.jinja2' %}
+{% set title = "Dashboard" %}
+
+{% block chat %}
+    <container class="w-full h-full flex items-center justify-around">
+        <div class="flex flex-col items-center">
+            <span class="font-semibold text-slate-500">Nombre de messages envoyés</span>
+            <span class="text-5xl font-bold text-slate-600">25</span>
+            <span class="text-sm text-slate-400">Volumétrie : 250 Ko</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <span class="font-semibold text-slate-500">Nombre de messages au total</span>
+            <span class="text-5xl font-bold text-slate-600">56</span>
+            <span class="text-sm text-slate-400">Volumétrie : 650 Ko</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <span class="font-semibold text-slate-500">Nombre de fichiers stockés</span>
+            <span class="text-5xl font-bold text-slate-600">4</span>
+            <span class="text-sm text-slate-400">Volumétrie : 1 Mo</span>
+        </div>
+    </container>
+{% endblock %}

@@ -146,6 +146,20 @@ def logout():
     return redirect("/login")
 
 
+@app.route("/dashboard")
+def dashboard():
+    all_conversations = Conversation.query.all()
+    conversations = []
+    logged_user = User.query.filter_by(id=session['user_id']).first()
+    for conversation in all_conversations:
+        if logged_user in conversation.users:
+            conversations += [conversation]
+    names = {}
+    for user in User.query.all():
+        names[user.id] = User.query.filter_by(id=user.id).first().name
+
+    return flask.render_template("dashboard.html.jinja2", conversations=conversations, names=names)
+
 @app.route('/conversation/<id>/message', methods=["POST"])
 def send_message(id):
     message_content = request.form.get("message")
