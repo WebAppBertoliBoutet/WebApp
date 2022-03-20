@@ -5,18 +5,18 @@
     <container class="w-full h-full flex items-center justify-around">
         <div class="flex flex-col items-center">
             <span class="font-semibold text-slate-500">Nombre de messages envoyés</span>
-            <span class="text-5xl font-bold text-slate-600">25</span>
-            <span class="text-sm text-slate-400">Volumétrie : 250 Ko</span>
+            <span class="text-5xl font-bold text-slate-600">{{ sent_messages }}</span>
+            <span class="text-sm text-slate-400">Volumétrie : {{ size_sent_messages }}</span>
         </div>
         <div class="flex flex-col items-center">
             <span class="font-semibold text-slate-500">Nombre de messages au total</span>
-            <span class="text-5xl font-bold text-slate-600">56</span>
-            <span class="text-sm text-slate-400">Volumétrie : 650 Ko</span>
+            <span class="text-5xl font-bold text-slate-600"> {{ total_messages }}</span>
+            <span class="text-sm text-slate-400">Volumétrie : {{ size_total_messages }}</span>
         </div>
         <div class="flex flex-col items-center">
             <span class="font-semibold text-slate-500">Nombre de fichiers stockés</span>
-            <span class="text-5xl font-bold text-slate-600">4</span>
-            <span class="text-sm text-slate-400">Volumétrie : 1 Mo</span>
+            <span class="text-5xl font-bold text-slate-600">{{ stocked_files }}</span>
+            <span class="text-sm text-slate-400">Volumétrie : {{ size_stocked_files }}</span>
         </div>
     </container>
 {% endblock %}

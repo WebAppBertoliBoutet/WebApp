@@ -7,25 +7,25 @@
             {% if message.user_id == session['user_id'] %}
                 {% if message.content %}
                     <p class="text-xs mr-5 mt-2 self-end">
-                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }} GMT
                     </p>
                     <div class="p-4 m-4 rounded-lg text-slate-50 bg-slate-500 shadow-lg shadow-slate-300 max-w-2xl self-end">
                         {{ message.content }}
                     </div>
                 {% elif message.filename and ( get_file_extension(message.filename) == '.jpg' or get_file_extension(message.filename) == '.png') %}
                     <p class="text-xs mr-5 mt-2 self-end">
-                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }} GMT
                     </p>
-                    <div class="m-4 rounded-lg p-1 overflow-hidden text-slate-50 bg-slate-500 shadow-l
-                    g shadow-slate-300 max-w-2xl self-end">
+                    <div class="m-4 rounded-lg p-1 text-slate-50 bg-slate-500 shadow-l
+                    g shadow-slate-300 max-w-xs self-end">
                         <img src="{{ url_for('static', filename='storage/' + message.filename) }} " alt=""
                              class="object-cover"/>
                     </div>
                 {% elif message.filename and get_file_extension(message.filename) == '.pdf' %}
                     <p class="text-xs mr-5 mt-2 self-end">
-                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }} GMT
                     </p>
-                    <a class="m-4 rounded-lg p-2 overflow-hidden text-slate-50 bg-slate-500 shadow-l
+                    <a class="m-4 rounded-lg p-4 overflow-hidden text-slate-50 bg-slate-500 shadow-l
                     g shadow-slate-300 max-w-2xl self-end flex items-center space-x-2"
                        href="{{ url_for('download_file',name=message.filename) }}" target="_blank">
                         <button type="submit">
@@ -43,25 +43,25 @@
             {% else %}
                 {% if message.content %}
                     <p class="text-xs ml-5 mt-2 self-start">
-                        {{ names[message.user_id] }}, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                        {{ names[message.user_id] }}, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }} GMT
                     </p>
                     <div class="p-4 m-4 rounded-lg text-slate-600 bg-white shadow-lg shadow-slate-300 self-start">
                         {{ message.content }}
                     </div>
                 {% elif message.filename and ( get_file_extension(message.filename) == '.jpg' or get_file_extension(message.filename) == '.png') %}
-                    <p class="text-xs mr-5 mt-2 self-start">
-                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                    <p class="text-xs ml-5 mt-2 self-start">
+                        {{ names[message.user_id] }}, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }} GMT
                     </p>
-                    <div class="m-4 rounded-lg p-1 overflow-hidden text-slate-600 bg-white shadow-l
-                    g shadow-slate-300 max-w-2xl self-end">
+                    <div class="m-4 rounded-lg p-1 text-slate-600 bg-white shadow-l
+                    g shadow-slate-300 max-w-xs">
                         <img src="{{ url_for('static', filename='storage/' + message.filename) }} " alt=""
                              class="object-cover"/>
                     </div>
                 {% elif message.filename and get_file_extension(message.filename) == '.pdf' %}
-                    <p class="text-xs mr-5 mt-2 self-start">
-                        You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }}
+                    <p class="text-xs ml-5 mt-2 self-start">
+                        {{ names[message.user_id] }}, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }} GMT
                     </p>
-                    <a class="mt-4 rounded-lg p-2 overflow-hidden text-slate-500 bg-white shadow-l
+                    <a class="mt-4 rounded-lg p-4 overflow-hidden text-slate-500 bg-white shadow-l
                     g shadow-slate-300 max-w-2xl self-start flex items-center space-x-2"
                        href="{{ url_for('download_file',name=message.filename) }}" target="_blank">
                         <button type="submit">

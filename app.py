@@ -2,18 +2,21 @@ from tempfile import mkdtemp
 
 import flask
 import os
+import os.path
+from sys import getsizeof
 from flask import Flask, redirect, session, Blueprint, url_for, flash, send_from_directory
 from flask import request, jsonify
 from flask_session import Session
 from flask_restx import Resource, Api
 from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy import null
 
 from database.database import init_database
 from database.models import *
-from helpers import login_required
+from helpers import login_required, convert_bytes
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/Users/eliot/Desktop/IMT Atlantique/WebApp/WebApp/static/storage'
+UPLOAD_FOLDER = '/Users/gabri_1i8s8l5/WebApp/static/storage'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
@@ -186,7 +189,31 @@ def dashboard():
     for user in User.query.all():
         names[user.id] = User.query.filter_by(id=user.id).first().name
 
-    return flask.render_template("dashboard.html.jinja2", conversations=conversations, names=names)
+    sent_messages = Message.query.filter_by(user_id=session['user_id']).count()
+    size_sent_messages = 0
+    for sent_message in Message.query.filter_by(user_id=session['user_id']):
+        if sent_message not in Message.query.filter_by(filename=null()):
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], sent_message.filename)
+            size_sent_messages += os.path.getsize(file_path)
+        size_sent_messages += getsizeof(sent_message.content)
+    total_messages = Message.query.count()
+    size_total_messages = 0
+    for message in Message.query.all():
+        if message not in Message.query.filter_by(filename=null()):
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], message.filename)
+            size_total_messages += os.path.getsize(file_path)
+        size_total_messages += getsizeof(message.content)
+    stocked_files = total_messages-Message.query.filter_by(filename=null()).count()
+    size_stocked_files = 0
+    for file in Message.query.all():
+        if file not in Message.query.filter_by(filename=null()):
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            size_stocked_files += os.path.getsize(file_path)
+
+    return flask.render_template("dashboard.html.jinja2", conversations=conversations, names=names,
+                                 sent_messages=sent_messages, size_sent_messages=convert_bytes(size_sent_messages),
+                                 total_messages=total_messages, size_total_messages=convert_bytes(size_total_messages),
+                                 stocked_files=stocked_files, size_stocked_files=convert_bytes(size_stocked_files))
 
 @app.route('/conversation/<id>/message', methods=["POST"])
 def send_message(id):
