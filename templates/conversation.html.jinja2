@@ -12,7 +12,7 @@
                     <div class="p-4 m-4 rounded-lg text-slate-50 bg-slate-500 shadow-lg shadow-slate-300 max-w-2xl self-end">
                         {{ message.content }}
                     </div>
-                {% elif message.filename and ( get_file_extension(message.filename) == '.jpg' or get_file_extension(message.filename) == '.png') %}
+                {% elif message.filename and ( get_file_extension(message.filename) == '.jpg' or get_file_extension(message.filename) == '.png' or get_file_extension(message.filename) == '.jpeg') %}
                     <p class="text-xs mr-5 mt-2 self-end">
                         You, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }} GMT
                     </p>
@@ -48,7 +48,7 @@
                     <div class="p-4 m-4 rounded-lg text-slate-600 bg-white shadow-lg shadow-slate-300 self-start">
                         {{ message.content }}
                     </div>
-                {% elif message.filename and ( get_file_extension(message.filename) == '.jpg' or get_file_extension(message.filename) == '.png') %}
+                {% elif message.filename and ( get_file_extension(message.filename) == '.jpg' or get_file_extension(message.filename) == '.png' or get_file_extension(message.filename) == '.jpeg')  %}
                     <p class="text-xs ml-5 mt-2 self-start">
                         {{ names[message.user_id] }}, {{ message.created_at.strftime("%a, %d %B %Y %H:%M:%S") }} GMT
                     </p>

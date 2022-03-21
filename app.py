@@ -309,7 +309,6 @@ def leave_conversation(id):
         return redirect('/')
 
 
-
 @app.route('/uploads/<name>')
 @login_required
 def download_file(name):

@@ -6,7 +6,6 @@ const sendMessage = () => {
 
     if (message) {
         formData.append('message', message);
-        console.log(formData)
         $.ajax({
             type: "POST",
             url: href + '/message',
@@ -105,3 +104,4 @@ function create_conversation() {
 
     $('body').append(create_conv_form)
 }
+
