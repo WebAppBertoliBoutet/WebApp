@@ -86,7 +86,7 @@ const manage_members = (id) => {
     leave_button.addEventListener('click', () => {
         $.get("/conversation/" + id + '/leave')
             .done((res) => {
-                console.log(res);
+                window.location.replace('http://localhost:5000/')
             })
     })
 }

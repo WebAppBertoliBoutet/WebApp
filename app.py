@@ -16,7 +16,7 @@ from database.models import *
 from helpers import login_required, convert_bytes
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/Users/gabri_1i8s8l5/WebApp/static/storage'
+UPLOAD_FOLDER = '/Users/eliot/Desktop/IMT Atlantique/WebApp/WebApp/static/storage'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
